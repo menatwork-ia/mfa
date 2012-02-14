@@ -30,6 +30,6 @@
 /*
  * Hooks
  */
-$GLOBALS['TL_HOOKS']['processFormData'][] = array('mailFormAttachment', 'processFormData');
+$GLOBALS['TL_HOOKS']['processFormData'][] = array('MailFormAttachment', 'processFormData');
 
 ?>

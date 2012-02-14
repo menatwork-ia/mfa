@@ -28,22 +28,45 @@
  */
 
 /**
- * Add to palette
+ * Config 
  */
-$GLOBALS['TL_DCA']['tl_form']['palettes']['__selector__'][] = 'mfa'; 
-$GLOBALS['TL_DCA']['tl_form']['palettes']['default'] = str_replace('sendViaEmail', 'mfa', $GLOBALS['TL_DCA']['tl_form']['palettes']['default']);
+$GLOBALS['TL_DCA']['tl_form']['config']['onload_callback'][] = array('tl_form_ext', 'disableSendViaEmail');
 
+/**
+ * Palettes
+ */
+$GLOBALS['TL_DCA']['tl_form']['palettes']['__selector__'][] = 'mfa';
+$GLOBALS['TL_DCA']['tl_form']['palettes']['default'] = str_replace('sendViaEmail', 'mfa', $GLOBALS['TL_DCA']['tl_form']['palettes']['default']);
 $GLOBALS['TL_DCA']['tl_form']['subpalettes']['mfa'] = $GLOBALS['TL_DCA']['tl_form']['subpalettes']['sendViaEmail'] . ',mail_attachment';
 
+/**
+ * Fields 
+ */
 $GLOBALS['TL_DCA']['tl_form']['fields']['mfa'] = $GLOBALS['TL_DCA']['tl_form']['fields']['sendViaEmail'];
 
 $GLOBALS['TL_DCA']['tl_form']['fields']['mail_attachment'] = array(
     'label' => &$GLOBALS['TL_LANG']['tl_form']['mail_attachment'],
-    'exclude' => TRUE,    
+    'exclude' => TRUE,
     'inputType' => 'select',
     'options' => array('mail_attach', 'link_path', 'attach_mail_link_path'),
-    'reference' => &$GLOBALS['TL_LANG']['MFA'],    
+    'reference' => &$GLOBALS['TL_LANG']['MFA'],
     'eval' => array('includeBlankOption' => TRUE, 'tl_class' => 'clr w50')
 );
+
+/**
+ * Class tl_form_ext
+ */
+class tl_form_ext extends tl_form
+{
+    /**
+     * Set the old sendViaEmail field in the database to FALSE
+     * 
+     * @param DataContainer $dc 
+     */
+    public function disableSendViaEmail(DataContainer $dc)
+    {
+        $this->Database->prepare("UPDATE tl_form SET sendViaEmail = ? WHERE id = ?")->execute(FALSE, $dc->id);
+    }
+}
 
 ?>

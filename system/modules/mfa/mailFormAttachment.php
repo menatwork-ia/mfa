@@ -26,12 +26,24 @@
  * @license    GNU/LGPL
  * @filesource
  */
- 
-class mailFormAttachment extends Frontend
-{
 
+/**
+ * Class MailFormAttachment
+ */
+class MailFormAttachment extends Frontend
+{
+    
+    /**
+     * Process the form data and send mail 
+     * HOOK: processFormData
+     * 
+     * @param array $arrPost
+     * @param array $arrForm
+     * @param array $arrFiles
+     * @param array $arrLabels 
+     */
     public function processFormData($arrPost, $arrForm, $arrFiles, $arrLabels)
-    {        
+    {
         // Send form data via e-mail
         if ($arrForm['mfa'])
         {
@@ -90,7 +102,7 @@ class mailFormAttachment extends Frontend
 
             // Get subject and message
             if ($arrForm['format'] == 'email')
-            {                
+            {
                 $message = $_SESSION['FORM_DATA']['message'];
                 $email->subject = $_SESSION['FORM_DATA']['subject'];
             }
@@ -117,14 +129,6 @@ class mailFormAttachment extends Frontend
             if (!strlen($email->subject))
             {
                 $email->subject = $this->replaceInsertTags($arrForm['subject']);
-            }
-
-            // Send copy to sender
-            //TODO VAR ISNT'T SET
-            if (strlen($arrSubmitted['cc']))
-            {
-                $email->sendCc($this->Input->post('email', true));
-                unset($_SESSION['FORM_DATA']['cc']);
             }
 
             // Attach XML file
@@ -156,16 +160,16 @@ class mailFormAttachment extends Frontend
                         case 'mail_attach':
                             $email->attachFileFromString(file_get_contents($file['tmp_name']), $file['name'], $file['type']);
                             break;
-                        case 'attach_mail_link_path':                                             
+                        case 'attach_mail_link_path':
                             $email->attachFileFromString(file_get_contents($file['tmp_name']), $file['name'], $file['type']);
                         case 'link_path':
                             // Add a link to the uploaded file
                             if ($file['uploaded'])
                             {
                                 $uploaded .= "\n" . $this->Environment->base . str_replace(TL_ROOT . '/', '', dirname($file['tmp_name'])) . '/' . rawurlencode($file['name']);
-                            }                                                
-                            break;                            
-                    }                     
+                            }
+                            break;
+                    }
                 }
             }
 

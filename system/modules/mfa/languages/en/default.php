@@ -30,8 +30,8 @@
 /**
  * Option Fields
  */
-$GLOBALS['TL_LANG']['MFA']['mail_attach'] = 'E-Mail attach';
+$GLOBALS['TL_LANG']['MFA']['mail_attach'] = 'E-mail attachments';
 $GLOBALS['TL_LANG']['MFA']['link_path'] = 'Set links';
-$GLOBALS['TL_LANG']['MFA']['attach_mail_link_path'] = 'Set links and e-mail attach';
+$GLOBALS['TL_LANG']['MFA']['attach_mail_link_path'] = 'Set links and e-mail attachments';
 
 ?>
