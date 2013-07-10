@@ -155,13 +155,14 @@ class MailFormAttachment extends Frontend
             {
                 foreach ($arrFiles as $file)
                 {
+                    $objFile = new File($file['tmp_name']);
                     switch ($arrForm['mail_attachment'])
                     {
                         case 'mail_attach':
-                            $email->attachFileFromString(file_get_contents($file['tmp_name']), $file['name'], $file['type']);
+                            $email->attachFileFromString(file_get_contents($file['tmp_name']), $file['name'], $objFile->mime);
                             break;
                         case 'attach_mail_link_path':
-                            $email->attachFileFromString(file_get_contents($file['tmp_name']), $file['name'], $file['type']);
+                            $email->attachFileFromString(file_get_contents($file['tmp_name']), $file['name'], $objFile->mime);
                         case 'link_path':
                             // Add a link to the uploaded file
                             if ($file['uploaded'])
