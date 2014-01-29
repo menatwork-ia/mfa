@@ -56,7 +56,7 @@ class MailFormAttachment extends Frontend
 
             foreach ($arrPost as $k => $v)
             {
-                if ($k == 'cc')
+                if (in_array($k, array('cc','FORM_SUBMIT','REQUEST_TOKEN','MAX_FILE_SIZE')))
                 {
                     continue;
                 }
@@ -64,7 +64,7 @@ class MailFormAttachment extends Frontend
                 $v = deserialize($v);
 
                 // Skip empty fields
-                if ($this->skipEmpty && !is_array($v) && !strlen($v))
+                if ($arrForm['skipEmpty'] && !is_array($v) && !strlen($v))
                 {
                     continue;
                 }
@@ -130,6 +130,13 @@ class MailFormAttachment extends Frontend
             {
                 $email->subject = $this->replaceInsertTags($arrForm['subject']);
             }
+            
+            // Send copy to sender
+            if (strlen($arrPost['cc']))
+            {
+                $email->sendCc($this->Input->post('email', true));
+                unset($_SESSION['FORM_DATA']['cc']);
+            }
 
             // Attach XML file
             if ($arrForm['format'] == 'xml')
@@ -155,14 +162,13 @@ class MailFormAttachment extends Frontend
             {
                 foreach ($arrFiles as $file)
                 {
-                    $objFile = new File($file['tmp_name']);
                     switch ($arrForm['mail_attachment'])
                     {
                         case 'mail_attach':
-                            $email->attachFileFromString(file_get_contents($file['tmp_name']), $file['name'], $objFile->mime);
+                            $email->attachFileFromString(file_get_contents($file['tmp_name']), $file['name'], $file['type']);
                             break;
                         case 'attach_mail_link_path':
-                            $email->attachFileFromString(file_get_contents($file['tmp_name']), $file['name'], $objFile->mime);
+                            $email->attachFileFromString(file_get_contents($file['tmp_name']), $file['name'], $file['type']);
                         case 'link_path':
                             // Add a link to the uploaded file
                             if ($file['uploaded'])
