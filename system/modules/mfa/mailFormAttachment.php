@@ -56,7 +56,7 @@ class MailFormAttachment extends Frontend
 
             foreach ($arrPost as $k => $v)
             {
-                if (in_array($k, array('cc','FORM_SUBMIT','REQUEST_TOKEN','MAX_FILE_SIZE')))
+                if (in_array($k, array('cc','FORM_SUBMIT','REQUEST_TOKEN','MAX_FILE_SIZE','password','password_confirm')))
                 {
                     continue;
                 }
