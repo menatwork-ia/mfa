@@ -12,7 +12,7 @@
 /**
  * Config 
  */
-$GLOBALS['TL_DCA']['tl_form']['config']['onload_callback'][] = array('MfaDCAHelper', 'disableSendViaEmail');
+$GLOBALS['TL_DCA']['tl_form']['config']['onload_callback'][] = array('MfaDcaHelper', 'disableSendViaEmail');
 
 /**
  * Palettes
