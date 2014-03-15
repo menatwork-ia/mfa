@@ -31,7 +31,16 @@ $GLOBALS['TL_DCA']['tl_form']['fields']['mail_attachment'] = array
     'label'               => &$GLOBALS['TL_LANG']['tl_form']['mail_attachment'],
     'exclude'             => true,
     'inputType'           => 'select',
-    'options'             => array('mail_attach', 'link_path', 'attach_mail_link_path'),
+    'options'             => array
+    (
+        'mail_attach',
+        'link_path',
+        'attach_mail_link_path'
+    ),
     'reference'           => &$GLOBALS['TL_LANG']['MFA'],
-    'eval'                => array('includeBlankOption' => true, 'tl_class' => 'clr w50')
+    'eval'                => array
+    (
+        'includeBlankOption' => true, 
+        'tl_class' => 'clr w50'
+    )
 );
