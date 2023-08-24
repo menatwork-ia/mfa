@@ -1,5 +1,5 @@
 {
-	"name":"beegedesign/mfa",
+	"name":"menatwork/mfa",
 	"description":"Mail form attachments",
 	"keywords":["mail","form","attachments"],
 	"type":"contao-module",
