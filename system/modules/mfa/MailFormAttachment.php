@@ -8,6 +8,7 @@
  * @license    GNU/LGPL
  * @filesource
  */
+use Contao\System;
 
 /**
  * Class MailFormAttachment
@@ -24,12 +25,14 @@ class MailFormAttachment extends Frontend
      * @param array $arrFiles
      * @param array $arrLabels 
      */
-    public function processFormData($arrPost, $arrForm, $arrFiles, $arrLabels)
+    public function processFormData($arrPost, $arrForm, $arrFiles = array(), $arrLabels)
     {
+        
         // Send form data via e-mail
         if ($arrForm['mfa'])
         {
-            $this->import('String');
+            $projectDir = System::getContainer()->getParameter('kernel.project_dir');
+            $fineUploaderFiles = array();
 
             $keys = array();
             $values = array();
@@ -44,6 +47,23 @@ class MailFormAttachment extends Frontend
                 }
 
                 $v = deserialize($v);
+                
+                if(is_string($v) && is_file($v)) {
+                    $fineUploaderFile = array(
+                        "fullpath" => $v,
+                        "name" => basename($v)
+                    );
+                    $fineUploaderFiles[$k] = $fineUploaderFile;
+                } else if(is_array($v) && is_file(reset($v))) {
+                    foreach($v as $key => $filePath) {
+                        $fineUploaderFile = array(
+                            "fullpath" => $filePath,
+                            "name" => basename($filePath)
+                        );
+                        
+                        $fineUploaderFiles[$k][] = $fineUploaderFile;
+                    }
+                }
 
                 // Skip empty fields
                 if ($arrForm['skipEmpty'] && !is_array($v) && !strlen($v))
@@ -51,8 +71,27 @@ class MailFormAttachment extends Frontend
                     continue;
                 }
 
-                // Add field to message
-                $message .= (isset($arrLabels[$k]) ? $arrLabels[$k] : ucfirst($k)) . ': ' . (is_array($v) ? implode(', ', $v) : $v) . "\n";
+                // Add field and value to message
+                if(is_array($fineUploaderFiles[$k])) {
+                    $files = array();
+                    if(array_key_exists("name", $fineUploaderFiles[$k])) {
+                        $files[] = $fineUploaderFiles[$k];
+                    } else {
+                        $files = array_merge($files, $fineUploaderFiles[$k]);
+                    }
+                    $message .= (isset($arrLabels[$k]) ? $arrLabels[$k] : ucfirst($k)) . ": \n";
+                    foreach($files as $file) {
+
+                        $uploaded = $this->Environment->base . str_replace(TL_ROOT . '/', '', dirname($file['fullpath'])) . '/' . rawurlencode($file['name']);
+                        
+                        $message .= $uploaded . "\n";
+                        
+                    }
+                    unset($files);
+                    unset($uploaded);
+                } else {
+                    $message .= (isset($arrLabels[$k]) ? $arrLabels[$k] : ucfirst($k)) . ': ' . (is_array($v) ? implode(', ', $v) : $v) . "\n";
+                }
 
                 // Prepare XML file
                 if ($arrForm['format'] == 'xml')
@@ -71,8 +110,8 @@ class MailFormAttachment extends Frontend
                     $values[] = (is_array($v) ? implode(',', $v) : $v);
                 }
             }
-
-            $recipients = $this->String->splitCsv($arrForm['recipient']);
+            
+            $recipients = \Contao\StringUtil::splitCsv($arrForm['recipient']);
 
             // Format recipients
             foreach ($recipients as $k => $v)
@@ -134,13 +173,13 @@ class MailFormAttachment extends Frontend
             // Attach CSV file
             if ($arrForm['format'] == 'csv')
             {
-                $email->attachFileFromString($this->String->decodeEntities('"' . implode('";"', $keys) . '"' . "\n" . '"' . implode('";"', $values) . '"'), 'form.csv', 'text/comma-separated-values');
+                $email->attachFileFromString(\Contao\StringUtil::decodeEntities('"' . implode('";"', $keys) . '"' . "\n" . '"' . implode('";"', $values) . '"'), 'form.csv', 'text/comma-separated-values');
             }
 
             $uploaded = '';
 
             // Attach uploaded files
-            if (count($arrFiles))
+            if (!empty($arrFiles) && count($arrFiles))
             {
                 foreach ($arrFiles as $file)
                 {
@@ -161,12 +200,31 @@ class MailFormAttachment extends Frontend
                     }
                 }
             }
+            //TODO: Refactoring - e.g. for Fineuploader
+            if(count($fineUploaderFiles)) {
+                foreach ($fineUploaderFiles as $file)
+                {
+                    switch ($arrForm['mail_attachment'])
+                    {
+                        case 'mail_attach':
+                            $email->attachFileFromString(file_get_contents($file['fullpath']), $file['name'], $file['type']);
+                            break;
+                        case 'attach_mail_link_path':
+                            $email->attachFileFromString(file_get_contents($file['fulltmp_name']), $file['name'], $file['type']);
+                        case 'link_path':
+                            // Add a link to the uploaded file
+                                //$uploaded .= "\n" . $this->Environment->base . str_replace(TL_ROOT . '/', '', dirname($file['fullpath'])) . '/' . rawurlencode($file['name']);
+                            break;
+                    }
+                }
+            }
 
             $uploaded = strlen(trim($uploaded)) ? "\n\n---\n" . $uploaded : '';
 
             // Send e-mail
-            $email->text = $this->String->decodeEntities(trim($message)) . $uploaded . "\n\n";
+            $email->text = \Contao\StringUtil::decodeEntities(trim($message)) . $uploaded . "\n\n";
             $email->sendTo($recipients);
+
         }
     }
 
