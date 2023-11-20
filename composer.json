@@ -38,9 +38,8 @@
 		"source":"https://github.com/menatwork-ia/mfa"
 	},
 	"require":{
-		"php":">=5.3",
-		"contao/core":">=2.11,<4",
-		"contao-community-alliance/composer-installer":"*"
+		"php": "^7.0",
+		"contao/core-bundle": "^4.4"
 	},
 	"autoload":{
 		"classmap":["system/"]
