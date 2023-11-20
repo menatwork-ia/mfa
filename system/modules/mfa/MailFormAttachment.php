@@ -14,23 +14,21 @@
  */
 class MailFormAttachment extends Frontend
 {
-    
+
     /**
-     * Process the form data and send mail 
+     * Process the form data and send mail
      * HOOK: processFormData
-     * 
+     *
      * @param array $arrPost
      * @param array $arrForm
      * @param array $arrFiles
-     * @param array $arrLabels 
+     * @param array $arrLabels
      */
     public function processFormData($arrPost, $arrForm, $arrFiles, $arrLabels)
     {
         // Send form data via e-mail
         if ($arrForm['mfa'])
         {
-            $this->import('String');
-
             $keys = array();
             $values = array();
             $fields = array();
@@ -72,7 +70,7 @@ class MailFormAttachment extends Frontend
                 }
             }
 
-            $recipients = $this->String->splitCsv($arrForm['recipient']);
+            $recipients = \Contao\StringUtil::splitCsv($arrForm['recipient']);
 
             // Format recipients
             foreach ($recipients as $k => $v)
@@ -112,7 +110,7 @@ class MailFormAttachment extends Frontend
             {
                 $email->subject = $this->replaceInsertTags($arrForm['subject']);
             }
-            
+
             // Send copy to sender
             if (strlen($arrPost['cc']))
             {
@@ -134,7 +132,7 @@ class MailFormAttachment extends Frontend
             // Attach CSV file
             if ($arrForm['format'] == 'csv')
             {
-                $email->attachFileFromString($this->String->decodeEntities('"' . implode('";"', $keys) . '"' . "\n" . '"' . implode('";"', $values) . '"'), 'form.csv', 'text/comma-separated-values');
+                $email->attachFileFromString(\Contao\StringUtil::decodeEntities('"' . implode('";"', $keys) . '"' . "\n" . '"' . implode('";"', $values) . '"'), 'form.csv', 'text/comma-separated-values');
             }
 
             $uploaded = '';
@@ -165,7 +163,7 @@ class MailFormAttachment extends Frontend
             $uploaded = strlen(trim($uploaded)) ? "\n\n---\n" . $uploaded : '';
 
             // Send e-mail
-            $email->text = $this->String->decodeEntities(trim($message)) . $uploaded . "\n\n";
+            $email->text = \Contao\StringUtil::decodeEntities(trim($message)) . $uploaded . "\n\n";
             $email->sendTo($recipients);
         }
     }
