@@ -12,4 +12,11 @@
 /**
  * Fields
  */
-$GLOBALS['TL_LANG']['tl_form']['mail_attachment'] = array('Übertragung der Dateien', 'Bitte wählen Sie hier die Option, mit der die Dateiuploads übertragen werden sollen.');
+$GLOBALS['TL_LANG']['tl_form']['mfa'] = array(
+    'Per E-Mail versenden mit Dateianhang',
+    'Die Formulardaten an eine E-Mail-Adresse versenden.'
+);
+$GLOBALS['TL_LANG']['tl_form']['mail_attachment'] = array(
+    'Übertragung der Dateien',
+    'Bitte wählen Sie hier die Option, mit der die Dateiuploads übertragen werden sollen.'
+);
